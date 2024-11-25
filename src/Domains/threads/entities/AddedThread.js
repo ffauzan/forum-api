@@ -20,9 +20,6 @@ class AddedThread {
       throw new Error('ADDED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    console.log('userId', userId);
-    console.log('type', typeof userId);
-
     if (typeof id !== 'string' || typeof userId !== 'string' || typeof title !== 'string' || typeof body !== 'string' || typeof createdAt !== 'string') {
       throw new Error('ADDED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }

@@ -37,4 +37,18 @@ describe('HTTP server', () => {
     expect(responseJson.status).toEqual('error');
     expect(responseJson.message).toEqual('terjadi kegagalan pada server kami');
   });
+
+  it('should response with 401 when request to protected route without access token', async () => {
+    // Arrange
+    const server = await createServer({});
+
+    // Action
+    const response = await server.inject({
+      method: 'POST',
+      url: '/threads',
+    });
+
+    // Assert
+    expect(response.statusCode).toEqual(401);
+  });
 });
