@@ -14,12 +14,11 @@ describe('a AddedThread entities', () => {
   it('should throw error when payload did not meet data type specification', () => {
     // Arrange
     const payload = {
-      id: '123',
+      id: 1,
+      userId: 'user-123',
       title: 1234,
       body: true,
-      date: '2021-08-08T07:22:13.017Z',
-      username: 'abc',
-      comments: [],
+      createdAt: '2021-08-08T07:22:13.017Z',
     };
 
     // Action and Assert
@@ -30,24 +29,22 @@ describe('a AddedThread entities', () => {
     // Arrange
     const payload = {
       id: '123',
+      userId: 'user-123',
       title: 'abc',
       body: 'abc',
-      date: '2021-08-08T07:22:13.017Z',
-      username: 'abc',
-      comments: [],
+      createdAt: '2021-08-08T07:22:13.017Z',
     };
 
     // Action
     const {
-      id, title, body, date, username, comments,
+      id, userId, title, body, createdAt,
     } = new AddedThread(payload);
 
     // Assert
     expect(id).toEqual(payload.id);
+    expect(userId).toEqual(payload.userId);
     expect(title).toEqual(payload.title);
     expect(body).toEqual(payload.body);
-    expect(date).toEqual(payload.date);
-    expect(username).toEqual(payload.username);
-    expect(comments).toEqual(payload.comments);
+    expect(createdAt).toEqual(payload.createdAt);
   });
 });
