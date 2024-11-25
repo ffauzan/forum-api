@@ -10,15 +10,14 @@ describe('AddThreadUseCase', () => {
       userId: 'user-123',
       title: 'abc',
       body: 'abc',
-      createdAt: '2021-08-08T07:22:13.017Z',
     };
 
-    const mockAddedThread = new AddedThread({
+    const expectedAddedThread = new AddedThread({
       id: 'thread-123',
       userId: useCasePayload.userId,
       title: useCasePayload.title,
       body: useCasePayload.body,
-      createdAt: useCasePayload.createdAt,
+      createdAt: '2021-08-08T07:22:13.017Z',
     });
 
     // Use case dependency
@@ -26,7 +25,15 @@ describe('AddThreadUseCase', () => {
 
     // Mocking needed function
     mockThreadRepository.addThread = jest.fn()
-      .mockImplementation(() => Promise.resolve(mockAddedThread));
+      .mockImplementation(() => Promise.resolve(
+        new AddedThread({
+          id: 'thread-123',
+          userId: useCasePayload.userId,
+          title: useCasePayload.title,
+          body: useCasePayload.body,
+          createdAt: '2021-08-08T07:22:13.017Z',
+        }),
+      ));
 
     // Creating instance of use case
     const addThreadUseCase = new AddThreadUseCase({
@@ -37,7 +44,7 @@ describe('AddThreadUseCase', () => {
     const addedThread = await addThreadUseCase.execute(useCasePayload);
 
     // Assert
-    expect(addedThread).toStrictEqual(mockAddedThread);
+    expect(addedThread).toStrictEqual(expectedAddedThread);
     expect(mockThreadRepository.addThread).toHaveBeenCalledWith(new AddThread(useCasePayload));
   });
 });
