@@ -170,4 +170,30 @@ describe('CommentRepositoryPostgres', () => {
       await expect(commentRepositoryPostgres.deleteCommentById('comment-1')).rejects.toThrow(InvariantError);
     });
   });
+
+  describe('getCoomentReplies function', () => {
+    it('should return comment replies correctly', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-1', userId: 'user-1', threadId: 'thread-1', content: 'content',
+      });
+
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-2',
+        userId: 'user-1',
+        threadId: 'thread-1',
+        content: 'content',
+        replyTo: 'comment-1',
+      });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentReplies('comment-1');
+
+      // Assert
+      expect(comments).toHaveLength(1);
+      expect(comments[0].id).toEqual('comment-2');
+    });
+  });
 });

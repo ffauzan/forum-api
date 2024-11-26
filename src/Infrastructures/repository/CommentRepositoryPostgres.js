@@ -93,6 +93,24 @@ class CommentRepositoryPostgres extends CommentRepository {
       throw new InvariantError('Komentar gagal dihapus. Id tidak ditemukan');
     }
   }
+
+  async getCommentReplies(commentId) {
+    const query = {
+      text: 'SELECT * FROM comments WHERE reply_to = $1',
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows.map((comment) => new AddedComment({
+      id: comment.id,
+      userId: comment.user_id,
+      threadId: comment.thread_id,
+      replyTo: comment.reply_to,
+      content: comment.content,
+      createdAt: comment.created_at,
+    }));
+  }
 }
 
 module.exports = CommentRepositoryPostgres;

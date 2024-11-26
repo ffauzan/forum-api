@@ -129,4 +129,95 @@ describe('/threads endpoint', () => {
       expect(response.statusCode).toEqual(401);
     });
   });
+
+  describe('when GET /threads/{threadId}', () => {
+    it('should response 200 and return thread with its comments', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Add user
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: {
+          username: 'falfal',
+          password: 'secret',
+          fullname: 'Fal Fal',
+        },
+      });
+
+      // Login user
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'falfal',
+          password: 'secret',
+        },
+      });
+      const { data: { accessToken } } = JSON.parse(loginResponse.payload);
+
+      // Create thread
+      const threadResponse = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        payload: {
+          title: 'Thread Title',
+          body: 'Thread Body',
+        },
+      });
+      const { data: { addedThread } } = JSON.parse(threadResponse.payload);
+
+      // Add comment to thread
+      await server.inject({
+        method: 'POST',
+        url: `/threads/${addedThread.id}/comments`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        payload: {
+          content: 'Comment Content',
+        },
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${addedThread.id}`,
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toBeDefined();
+      expect(responseJson.data.thread.id).toEqual(addedThread.id);
+      expect(responseJson.data.thread.title).toEqual('Thread Title');
+      expect(responseJson.data.thread.body).toEqual('Thread Body');
+      expect(responseJson.data.thread.comments).toHaveLength(1);
+      expect(responseJson.data.thread.comments[0].content).toEqual('Comment Content');
+    });
+
+    it('should response 404 when thread does not exist', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: '/threads/nonexistent-thread-id',
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('thread tidak ditemukan');
+    });
+  });
 });
