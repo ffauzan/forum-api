@@ -2,7 +2,6 @@ const GetThreadUseCase = require('../GetThreadUseCase');
 const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
 const UserRepository = require('../../../../Domains/users/UserRepository');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
-const AddedThread = require('../../../../Domains/threads/entities/AddedThread');
 
 describe('GetThreadUseCase', () => {
   it('should orchestrate the get thread action correctly', async () => {
@@ -11,22 +10,12 @@ describe('GetThreadUseCase', () => {
       threadId: 'thread-123',
     };
 
-    const expectedUser = {
-      id: 'user-123',
-      username: 'threadOwner',
-    };
-
     const expectedThread = {
       id: 'thread-123',
       title: 'Thread Title',
       body: 'Thread body content',
       date: '2024-11-26T00:00:00.000Z',
       username: 'threadOwner',
-    };
-
-    const expectedCommentUser = {
-      id: 'user-456',
-      username: 'commentUser',
     };
 
     const expectedComments = [
@@ -58,15 +47,20 @@ describe('GetThreadUseCase', () => {
         id: 'user-123',
         username: 'threadOwner',
       }))
-      // Comment user
+      // Comment 1 user
       .mockImplementationOnce(() => Promise.resolve({
         id: 'user-456',
         username: 'commentUser',
       }))
-      // Reply user
+      // Reply of comment 1 user
       .mockImplementationOnce(() => Promise.resolve({
         id: 'user-123',
         username: 'threadOwner',
+      }))
+      // Comment 2 user
+      .mockImplementationOnce(() => Promise.resolve({
+        id: 'user-456',
+        username: 'commentUser',
       }));
 
     mockCommentRepository.getCommentsByThreadId = jest.fn()
@@ -85,7 +79,15 @@ describe('GetThreadUseCase', () => {
           content: 'Reply to comment content',
           createdAt: '2024-11-26T02:00:00.000Z',
           replyTo: 'comment-123',
-          isDeleted: false,
+          isDeleted: true,
+        },
+        {
+          id: 'comment-125',
+          userId: 'user-456',
+          content: 'Comment content 2',
+          createdAt: '2024-11-26T03:00:00.000Z',
+          replyTo: null,
+          isDeleted: true,
         },
       ]));
 
@@ -98,8 +100,6 @@ describe('GetThreadUseCase', () => {
     // Action
     const thread = await getThreadUseCase.execute(useCasePayload.threadId);
 
-    console.log(thread);
-
     // Assert
     expect(thread).toStrictEqual({
       ...expectedThread,
@@ -111,18 +111,26 @@ describe('GetThreadUseCase', () => {
               id: 'comment-124',
               username: 'threadOwner',
               date: '2024-11-26T02:00:00.000Z',
-              content: 'Reply to comment content',
+              content: '**balasan telah dihapus**',
             },
           ],
+        },
+        {
+          id: 'comment-125',
+          username: 'commentUser',
+          date: '2024-11-26T03:00:00.000Z',
+          content: '**komentar telah dihapus**',
+          replies: [],
         },
       ],
     });
 
     expect(mockThreadRepository.getThreadById).toHaveBeenCalledWith(useCasePayload.threadId);
-    expect(mockUserRepository.getUserById).toHaveBeenCalledTimes(3);
+    expect(mockUserRepository.getUserById).toHaveBeenCalledTimes(4);
     expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-123');
     expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-456');
     expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-123');
+    expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-456');
     expect(mockCommentRepository.getCommentsByThreadId).toHaveBeenCalledWith(useCasePayload.threadId);
   });
 });
