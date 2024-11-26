@@ -24,6 +24,19 @@ describe('a AddComment entities', () => {
     expect(() => new AddComment(payload)).toThrow('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
+  it('should throw error when replyTo did not meet data specifications', () => {
+    // Arrange
+    const payload = {
+      userId: 'user-123',
+      threadId: 'thread-123',
+      content: '123',
+      replyTo: 123,
+    };
+
+    // Action and Assert
+    expect(() => new AddComment(payload)).toThrow('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
+
   it('should create addComment object correctly', () => {
     // Arrange
     const payload = {

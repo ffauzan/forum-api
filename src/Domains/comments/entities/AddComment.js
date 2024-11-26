@@ -23,7 +23,7 @@ class AddComment {
       throw new Error('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
 
-    if (replyTo && typeof replyTo !== 'string') {
+    if (replyTo !== null && replyTo !== undefined && typeof replyTo !== 'string') {
       throw new Error('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
