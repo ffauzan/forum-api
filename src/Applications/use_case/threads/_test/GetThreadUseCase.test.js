@@ -27,11 +27,12 @@ describe('GetThreadUseCase', () => {
       },
     ];
 
+    // Use case dependency
     const mockThreadRepository = new ThreadRepository();
     const mockUserRepository = new UserRepository();
     const mockCommentRepository = new CommentRepository();
 
-    // Mocking
+    // Mocking needed function
     mockThreadRepository.getThreadById = jest.fn()
       .mockImplementation(() => Promise.resolve({
         id: 'thread-123',
@@ -91,6 +92,7 @@ describe('GetThreadUseCase', () => {
         },
       ]));
 
+    // Creating instance of use case
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
       userRepository: mockUserRepository,
