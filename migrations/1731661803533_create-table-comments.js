@@ -4,6 +4,12 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       primaryKey: true,
     },
+    user_id: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+      references: 'users',
+      onDelete: 'cascade',
+    },
     thread_id: {
       type: 'VARCHAR(50)',
       notNull: true,
@@ -31,4 +37,6 @@ exports.up = (pgm) => {
   });
 };
 
-exports.down = (pgm) => {};
+exports.down = (pgm) => {
+  pgm.dropTable('comments');
+};
