@@ -34,6 +34,11 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
+    is_deleted: {
+      type: 'BOOLEAN',
+      notNull: true,
+      default: false,
+    },
   });
 };
 

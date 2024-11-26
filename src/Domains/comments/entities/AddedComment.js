@@ -3,7 +3,7 @@ class AddedComment {
     this._verifyPayload(payload);
 
     const {
-      id, userId, threadId, replyTo, content, createdAt,
+      id, userId, threadId, replyTo, content, createdAt, isDeleted,
     } = payload;
 
     this.id = id;
@@ -12,6 +12,7 @@ class AddedComment {
     this.replyTo = replyTo || null; // Default to null if not provided
     this.content = content;
     this.createdAt = createdAt;
+    this.isDeleted = isDeleted || false; // Default to false if not provided
   }
 
   _verifyPayload({

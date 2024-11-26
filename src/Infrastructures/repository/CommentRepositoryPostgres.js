@@ -15,7 +15,11 @@ class CommentRepositoryPostgres extends CommentRepository {
     const {
       userId, threadId, content, replyTo,
     } = addComment;
-    const id = `comment-${this._idGenerator()}`;
+    let id = `comment-${this._idGenerator()}`;
+
+    if (replyTo) {
+      id = `reply-${this._idGenerator()}`;
+    }
 
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
@@ -60,12 +64,13 @@ class CommentRepositoryPostgres extends CommentRepository {
       replyTo: result.rows[0].reply_to,
       content: result.rows[0].content,
       createdAt: result.rows[0].created_at,
+      isDeleted: result.rows[0].is_deleted,
     });
   }
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT * FROM comments WHERE thread_id = $1',
+      text: 'SELECT * FROM comments WHERE thread_id = $1 ORDER BY created_at ASC',
       values: [threadId],
     };
 
@@ -78,19 +83,21 @@ class CommentRepositoryPostgres extends CommentRepository {
       replyTo: comment.reply_to,
       content: comment.content,
       createdAt: comment.created_at,
+      isDeleted: comment.is_deleted,
     }));
   }
 
   async deleteCommentById(id) {
+    // Set is_deleted to true
     const query = {
-      text: 'DELETE FROM comments WHERE id = $1 RETURNING id',
+      text: 'UPDATE comments SET is_deleted = true WHERE id = $1',
       values: [id],
     };
 
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new InvariantError('Komentar gagal dihapus. Id tidak ditemukan');
+      throw new NotFoundError('Komentar tidak ditemukan');
     }
   }
 

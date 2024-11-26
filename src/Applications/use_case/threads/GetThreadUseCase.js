@@ -14,6 +14,20 @@ class GetThreadUseCase {
       const u = await this._userRepository.getUserById(c.userId);
       const commentWithUsername = { ...c, username: u.username };
 
+      if (c.isDeleted) {
+        if (c.replyTo) {
+          return {
+            ...commentWithUsername,
+            content: '**balasan telah dihapus**',
+          };
+        }
+
+        return {
+          ...commentWithUsername,
+          content: '**komentar telah dihapus**',
+        };
+      }
+
       return commentWithUsername;
     }));
 
@@ -24,7 +38,7 @@ class GetThreadUseCase {
       date: thread.createdAt,
       username: user.username,
       comments: commentsWithUsername
-        .filter((comment) => typeof comment.replyTo !== 'string')
+        .filter((comment) => comment.replyTo === null)
         .map((comment) => ({
           id: comment.id,
           username: comment.username,

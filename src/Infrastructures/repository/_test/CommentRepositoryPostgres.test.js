@@ -53,7 +53,7 @@ describe('CommentRepositoryPostgres', () => {
       // Arrange
       // Add dummy comment
       await CommentsTableTestHelper.addComment({
-        id: 'comment-1', userId: 'user-1', threadId: 'thread-1', content: 'content',
+        id: 'comment-1', userId: 'user-1', threadId: 'thread-1', content: 'content', replyTo: null,
       });
 
       // Add reply to comment
@@ -71,7 +71,7 @@ describe('CommentRepositoryPostgres', () => {
       const c = await commentRepositoryPostgres.addComment(reply);
 
       // Assert
-      const comments = await CommentsTableTestHelper.findCommentById('comment-2');
+      const comments = await CommentsTableTestHelper.findCommentById('reply-2');
       expect(comments).toHaveLength(1);
       expect(c.userId).toEqual(reply.userId);
       expect(c.threadId).toEqual(reply.threadId);
@@ -159,15 +159,15 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       const comments = await CommentsTableTestHelper.findCommentById('comment-1');
-      expect(comments).toHaveLength(0);
+      expect(comments[0].is_deleted).toEqual(true);
     });
 
-    it('should throw InvariantError when delete non exist comment', async () => {
+    it('should throw NotFoundError when delete non exist comment', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.deleteCommentById('comment-1')).rejects.toThrow(InvariantError);
+      await expect(commentRepositoryPostgres.deleteCommentById('comment-1')).rejects.toThrow(NotFoundError);
     });
   });
 

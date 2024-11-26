@@ -76,6 +76,8 @@ describe('GetThreadUseCase', () => {
           userId: 'user-456',
           content: 'Comment content',
           createdAt: '2024-11-26T01:00:00.000Z',
+          replyTo: null,
+          isDeleted: false,
         },
         {
           id: 'comment-124',
@@ -83,6 +85,7 @@ describe('GetThreadUseCase', () => {
           content: 'Reply to comment content',
           createdAt: '2024-11-26T02:00:00.000Z',
           replyTo: 'comment-123',
+          isDeleted: false,
         },
       ]));
 
@@ -94,6 +97,8 @@ describe('GetThreadUseCase', () => {
 
     // Action
     const thread = await getThreadUseCase.execute(useCasePayload.threadId);
+
+    console.log(thread);
 
     // Assert
     expect(thread).toStrictEqual({

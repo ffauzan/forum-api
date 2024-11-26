@@ -51,11 +51,12 @@ describe('a AddedComment entities', () => {
       replyTo: null,
       content: 'abc',
       createdAt: '2021-08-08T07:22:13.017Z',
+      isDeleted: false,
     };
 
     // Action
     const {
-      id, userId, threadId, replyTo, content, createdAt,
+      id, userId, threadId, replyTo, content, createdAt, isDeleted,
     } = new AddedComment(payload);
 
     // Assert
@@ -65,5 +66,6 @@ describe('a AddedComment entities', () => {
     expect(replyTo).toEqual(payload.replyTo);
     expect(content).toEqual(payload.content);
     expect(createdAt).toEqual(payload.createdAt);
+    expect(isDeleted).toEqual(payload.isDeleted);
   });
 });
