@@ -42,7 +42,7 @@ describe('DeleteCommentUseCase', () => {
     expect(mockCommentRepository.deleteCommentById)
       .toHaveBeenCalledWith(useCasePayload.id);
   });
-  it('should throw error when user not comment owner', async () => {
+  it('should throw authorization error when user not comment owner', async () => {
     // Arrange
     const useCasePayload = {
       id: 'comment-123',
@@ -75,7 +75,7 @@ describe('DeleteCommentUseCase', () => {
     // Action & Assert
     await expect(deleteCommentUseCase.execute(useCasePayload.id, useCasePayload.userId))
       .rejects
-      .toThrow('Anda tidak berhak mengakses resource ini');
+      .toThrow('DELETE_COMMENT_USE_CASE.NOT_THE_COMMENT_OWNER');
   });
   it('should throw error when comment not found', async () => {
     // Arrange

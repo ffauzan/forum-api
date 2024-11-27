@@ -1,5 +1,3 @@
-const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
-
 class DeleteCommentUseCase {
   constructor({ commentRepository }) {
     this._commentRepository = commentRepository;
@@ -9,7 +7,7 @@ class DeleteCommentUseCase {
     // Verify comment owner
     const comment = await this._commentRepository.getCommentById(id);
     if (comment.userId !== userId) {
-      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
+      throw new Error('DELETE_COMMENT_USE_CASE.NOT_THE_COMMENT_OWNER');
     }
 
     await this._commentRepository.deleteCommentById(id);
