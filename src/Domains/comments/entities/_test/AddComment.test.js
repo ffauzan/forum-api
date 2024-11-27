@@ -47,11 +47,14 @@ describe('a AddComment entities', () => {
     };
 
     // Action
-    const { userId, threadId, content } = new AddComment(payload);
+    const {
+      userId, threadId, replyTo, content,
+    } = new AddComment(payload);
 
     // Assert
     expect(userId).toEqual(payload.userId);
     expect(threadId).toEqual(payload.threadId);
+    expect(replyTo).toEqual(payload.replyTo);
     expect(content).toEqual(payload.content);
   });
 });
