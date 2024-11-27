@@ -39,14 +39,21 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
 
       // Action
-      const c = await commentRepositoryPostgres.addComment(addComment);
+      const addedComment = await commentRepositoryPostgres.addComment(addComment);
 
       // Assert
       const comments = await CommentsTableTestHelper.findCommentById('comment-1');
       expect(comments).toHaveLength(1);
-      expect(c.userId).toEqual(addComment.userId);
-      expect(c.threadId).toEqual(addComment.threadId);
-      expect(c.content).toEqual(addComment.content);
+
+      expect(addedComment).toEqual({
+        id: 'comment-1',
+        userId: 'user-1',
+        threadId: 'thread-1',
+        content: 'content',
+        replyTo: null,
+        createdAt: expect.any(String),
+        isDeleted: false,
+      });
     });
 
     it('should persist add comment with replyTo and return added comment correctly', async () => {
@@ -68,15 +75,22 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
 
       // Action
-      const c = await commentRepositoryPostgres.addComment(reply);
+      const addedComment = await commentRepositoryPostgres.addComment(reply);
 
       // Assert
       const comments = await CommentsTableTestHelper.findCommentById('reply-2');
+
       expect(comments).toHaveLength(1);
-      expect(c.userId).toEqual(reply.userId);
-      expect(c.threadId).toEqual(reply.threadId);
-      expect(c.content).toEqual(reply.content);
-      expect(c.replyTo).toEqual(reply.replyTo);
+
+      expect(addedComment).toEqual({
+        id: 'reply-2',
+        userId: 'user-1',
+        threadId: 'thread-1',
+        content: 'content',
+        replyTo: 'comment-1',
+        createdAt: expect.any(String),
+        isDeleted: false,
+      });
     });
 
     it('should throw InvariantError when adding comment to non exist thread', async () => {
@@ -104,13 +118,18 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action
-      const c = await commentRepositoryPostgres.getCommentById('comment-1');
+      const comment = await commentRepositoryPostgres.getCommentById('comment-1');
 
       // Assert
-      expect(c.id).toEqual('comment-1');
-      expect(c.userId).toEqual('user-1');
-      expect(c.threadId).toEqual('thread-1');
-      expect(c.content).toEqual('content');
+      expect(comment).toEqual({
+        id: 'comment-1',
+        userId: 'user-1',
+        threadId: 'thread-1',
+        content: 'content',
+        replyTo: null,
+        createdAt: expect.any(String),
+        isDeleted: false,
+      });
     });
 
     it('should throw NotFound when comment not found', async () => {
@@ -140,8 +159,26 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       expect(comments).toHaveLength(2);
-      expect(comments[0].id).toEqual('comment-1');
-      expect(comments[1].id).toEqual('comment-2');
+
+      expect(comments[0]).toEqual({
+        id: 'comment-1',
+        userId: 'user-1',
+        threadId: 'thread-1',
+        content: 'content',
+        replyTo: null,
+        createdAt: expect.any(String),
+        isDeleted: false,
+      });
+
+      expect(comments[1]).toEqual({
+        id: 'comment-2',
+        userId: 'user-1',
+        threadId: 'thread-1',
+        content: 'content',
+        replyTo: null,
+        createdAt: expect.any(String),
+        isDeleted: false,
+      });
     });
   });
 
@@ -171,7 +208,7 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  describe('getCoomentReplies function', () => {
+  describe('getComentReplies function', () => {
     it('should return comment replies correctly', async () => {
       // Arrange
       await CommentsTableTestHelper.addComment({
@@ -193,7 +230,15 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       expect(comments).toHaveLength(1);
-      expect(comments[0].id).toEqual('comment-2');
+      expect(comments[0]).toEqual({
+        id: 'comment-2',
+        userId: 'user-1',
+        threadId: 'thread-1',
+        content: 'content',
+        replyTo: 'comment-1',
+        createdAt: expect.any(String),
+        isDeleted: false,
+      });
     });
   });
 });

@@ -2,6 +2,7 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
@@ -34,14 +35,20 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
 
       // Action
-      const t = await threadRepositoryPostgres.addThread(addThread);
+      const addedThread = await threadRepositoryPostgres.addThread(addThread);
 
       // Assert
       const threads = await ThreadsTableTestHelper.findThreadsById('thread-123');
+
       expect(threads).toHaveLength(1);
-      expect(t.userId).toEqual(addThread.userId);
-      expect(t.title).toEqual(addThread.title);
-      expect(t.body).toEqual(addThread.body);
+
+      expect(addedThread).toEqual({
+        id: 'thread-123',
+        userId: 'user-123',
+        title: 'title',
+        body: 'body',
+        createdAt: expect.any(String),
+      });
     });
   });
 
@@ -56,14 +63,25 @@ describe('ThreadRepositoryPostgres', () => {
 
     it('should return thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-234' });
+      await ThreadsTableTestHelper.addThread({
+        id: 'thread-234',
+        userId: 'user-123',
+        title: 'title',
+        body: 'body',
+      });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
       const thread = await threadRepositoryPostgres.getThreadById('thread-234');
 
       // Assert
-      expect(thread.id).toEqual('thread-234');
+      expect(thread).toEqual({
+        id: 'thread-234',
+        userId: 'user-123',
+        title: 'title',
+        body: 'body',
+        createdAt: expect.any(String),
+      });
     });
   });
 
