@@ -16,7 +16,13 @@ class AddCommentUseCase {
     }
 
     const addComment = new AddComment(useCasePayload);
-    return this._commentRepository.addComment(addComment);
+    const addedComment = await this._commentRepository.addComment(addComment);
+
+    return ({
+      id: addedComment.id,
+      content: addedComment.content,
+      owner: addedComment.userId,
+    });
   }
 }
 

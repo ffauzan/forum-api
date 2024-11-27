@@ -24,11 +24,7 @@ class CommentsHandler {
     const response = h.response({
       status: 'success',
       data: {
-        addedComment: {
-          id: addedComment.id,
-          content: addedComment.content,
-          owner: credentialId,
-        },
+        addedComment,
       },
     });
     response.code(201);
@@ -55,7 +51,7 @@ class CommentsHandler {
 
     const { id: credentialId } = request.auth.credentials;
 
-    const addedComment = await addCommentUseCase.execute({
+    const addedReply = await addCommentUseCase.execute({
       userId: credentialId,
       threadId: request.params.threadId,
       content: request.payload.content,
@@ -65,11 +61,7 @@ class CommentsHandler {
     const response = h.response({
       status: 'success',
       data: {
-        addedReply: {
-          id: addedComment.id,
-          content: addedComment.content,
-          owner: credentialId,
-        },
+        addedReply,
       },
     });
     response.code(201);
