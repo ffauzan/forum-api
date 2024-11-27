@@ -4,6 +4,7 @@ const CommentRepository = require('../../../../Domains/comments/CommentRepositor
 const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
 const AddCommentUseCase = require('../AddCommentUseCase');
 const InvariantError = require('../../../../Commons/exceptions/InvariantError');
+const NotFoundError = require('../../../../Commons/exceptions/NotFoundError');
 
 describe('AddCommentUseCase', () => {
   it('should orchestrating the add comment action correctly', async () => {
@@ -38,7 +39,7 @@ describe('AddCommentUseCase', () => {
         }),
       ));
 
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.isThreadExist = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
     // Creating instance of use case
@@ -71,8 +72,8 @@ describe('AddCommentUseCase', () => {
     mockCommentRepository.addComment = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
-    mockThreadRepository.getThreadById = jest.fn()
-      .mockImplementation(() => Promise.reject(new InvariantError('thread tidak ditemukan')));
+    mockThreadRepository.isThreadExist = jest.fn()
+      .mockImplementation(() => Promise.reject(new NotFoundError('thread tidak ditemukan')));
 
     // Creating instance of use case
     const addCommentUseCase = new AddCommentUseCase({
@@ -101,7 +102,7 @@ describe('AddCommentUseCase', () => {
     mockCommentRepository.addComment = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.isThreadExist = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
     mockCommentRepository.getCommentById = jest.fn()

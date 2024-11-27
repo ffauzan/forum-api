@@ -8,7 +8,7 @@ class AddCommentUseCase {
 
   async execute(useCasePayload) {
     // Check if thread exists
-    await this._threadRepository.getThreadById(useCasePayload.threadId);
+    await this._threadRepository.isThreadExist(useCasePayload.threadId);
 
     // Check if this is a reply, and if so, check if the replyTo comment exists
     if (useCasePayload.replyTo) {
