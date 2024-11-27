@@ -32,9 +32,10 @@ describe('a AddThread entities', () => {
     };
 
     // Action
-    const { title, body } = new AddThread(payload);
+    const { userId, title, body } = new AddThread(payload);
 
     // Assert
+    expect(userId).toEqual(payload.userId);
     expect(title).toEqual(payload.title);
     expect(body).toEqual(payload.body);
   });
