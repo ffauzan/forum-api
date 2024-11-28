@@ -66,6 +66,7 @@ describe('/threads endpoint', () => {
       expect(responseJson.data.addedThread.owner).toBeDefined();
       expect(responseJson.data.addedThread.title).toEqual(requestPayload.title);
     });
+
     it('should response 400 when request payload not meet data type specification', async () => {
       // Arrange
       const requestPayload = {
@@ -109,7 +110,9 @@ describe('/threads endpoint', () => {
 
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('tidak dapat membuat thread baru karena tipe data tidak sesuai');
     });
+
     it('should response 401 when request without access token', async () => {
       // Arrange
       const requestPayload = {
@@ -126,7 +129,10 @@ describe('/threads endpoint', () => {
       });
 
       // Assert
+      const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(401);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('Missing authentication');
     });
   });
 
