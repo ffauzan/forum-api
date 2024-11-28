@@ -20,6 +20,9 @@ describe('AddCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
 
     // Mocking needed function
+    mockThreadRepository.isThreadExist = jest.fn()
+      .mockImplementation(() => Promise.resolve(true));
+
     mockCommentRepository.addComment = jest.fn()
       .mockImplementation(() => Promise.resolve(
         new AddedComment({
@@ -30,9 +33,6 @@ describe('AddCommentUseCase', () => {
           createdAt: '2021-08-08T07:22:13.017Z',
         }),
       ));
-
-    mockThreadRepository.isThreadExist = jest.fn()
-      .mockImplementation(() => Promise.resolve(true));
 
     // Creating instance of use case
     const addCommentUseCase = new AddCommentUseCase({
@@ -49,8 +49,8 @@ describe('AddCommentUseCase', () => {
       content: 'abc',
       owner: 'user-123',
     });
-    expect(mockCommentRepository.addComment).toHaveBeenCalledWith(new AddComment(useCasePayload));
     expect(mockThreadRepository.isThreadExist).toHaveBeenCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.addComment).toHaveBeenCalledWith(new AddComment(useCasePayload));
   });
 
   it('should throw error if thread not found', async () => {
