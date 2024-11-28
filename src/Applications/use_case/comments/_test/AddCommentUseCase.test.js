@@ -32,7 +32,7 @@ describe('AddCommentUseCase', () => {
       ));
 
     mockThreadRepository.isThreadExist = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => Promise.resolve(true));
 
     // Creating instance of use case
     const addCommentUseCase = new AddCommentUseCase({
@@ -50,6 +50,7 @@ describe('AddCommentUseCase', () => {
       owner: 'user-123',
     });
     expect(mockCommentRepository.addComment).toHaveBeenCalledWith(new AddComment(useCasePayload));
+    expect(mockThreadRepository.isThreadExist).toHaveBeenCalledWith(useCasePayload.threadId);
   });
 
   it('should throw error if thread not found', async () => {
@@ -65,11 +66,11 @@ describe('AddCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
 
     // Mocking needed function
-    mockCommentRepository.addComment = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-
     mockThreadRepository.isThreadExist = jest.fn()
       .mockImplementation(() => Promise.reject(new NotFoundError('thread tidak ditemukan')));
+
+    mockCommentRepository.addComment = jest.fn()
+      .mockImplementation(() => Promise.resolve());
 
     // Creating instance of use case
     const addCommentUseCase = new AddCommentUseCase({
@@ -79,6 +80,9 @@ describe('AddCommentUseCase', () => {
 
     // Action & Assert
     await expect(addCommentUseCase.execute(useCasePayload)).rejects.toThrow('thread tidak ditemukan');
+
+    expect(mockThreadRepository.isThreadExist).toHaveBeenCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.addComment).not.toHaveBeenCalled();
   });
 
   it('should throw error if replyTo not found', async () => {
@@ -95,14 +99,14 @@ describe('AddCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
 
     // Mocking needed function
-    mockCommentRepository.addComment = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-
     mockThreadRepository.isThreadExist = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => Promise.resolve(true));
 
     mockCommentRepository.getCommentById = jest.fn()
       .mockImplementation(() => Promise.reject(new InvariantError('Komentar tidak ditemukan')));
+
+    mockCommentRepository.addComment = jest.fn()
+      .mockImplementation(() => Promise.resolve());
 
     // Creating instance of use case
     const addCommentUseCase = new AddCommentUseCase({
@@ -112,5 +116,9 @@ describe('AddCommentUseCase', () => {
 
     // Action & Assert
     await expect(addCommentUseCase.execute(useCasePayload)).rejects.toThrow('Komentar tidak ditemukan');
+
+    expect(mockThreadRepository.isThreadExist).toHaveBeenCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.getCommentById).toHaveBeenCalledWith(useCasePayload.replyTo);
+    expect(mockCommentRepository.addComment).not.toHaveBeenCalled();
   });
 });
