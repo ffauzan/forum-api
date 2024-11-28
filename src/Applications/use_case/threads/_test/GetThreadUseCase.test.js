@@ -5,6 +5,7 @@ const UserRepository = require('../../../../Domains/users/UserRepository');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
 const RegisteredUser = require('../../../../Domains/users/entities/RegisteredUser');
 const AddedComment = require('../../../../Domains/comments/entities/AddedComment');
+const NotFoundError = require('../../../../Commons/exceptions/NotFoundError');
 
 describe('GetThreadUseCase', () => {
   it('should orchestrate the get thread action correctly', async () => {
@@ -144,5 +145,30 @@ describe('GetThreadUseCase', () => {
     expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-123');
     expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-456');
     expect(mockCommentRepository.getCommentsByThreadId).toHaveBeenCalledWith(useCasePayload.threadId);
+  });
+
+  it('should throw error if thread not found', async () => {
+    // Arrange
+    const useCasePayload = {
+      threadId: 'thread-123',
+    };
+
+    // Use case dependency
+    const mockThreadRepository = new ThreadRepository();
+
+    // Mocking needed function
+    mockThreadRepository.getThreadById = jest.fn()
+      .mockImplementation(() => Promise.reject(new NotFoundError('thread tidak ditemukan')));
+
+    // Creating instance of use case
+    const getThreadUseCase = new GetThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action & Assert
+    await expect(getThreadUseCase.execute(useCasePayload.threadId))
+      .rejects
+      .toThrow(new NotFoundError('thread tidak ditemukan'));
+    expect(mockThreadRepository.getThreadById).toHaveBeenCalledWith(useCasePayload.threadId);
   });
 });
