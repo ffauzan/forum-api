@@ -65,7 +65,7 @@ describe('DeleteCommentUseCase', () => {
           createdAt: '2021-08-08T07:22:33.555Z',
         }),
       ));
-    mockCommentRepository.deleteComment = jest.fn()
+    mockCommentRepository.deleteCommentById = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
     // Creating instance of use case
@@ -77,7 +77,11 @@ describe('DeleteCommentUseCase', () => {
     await expect(deleteCommentUseCase.execute(useCasePayload.id, useCasePayload.userId))
       .rejects
       .toThrow('DELETE_COMMENT_USE_CASE.NOT_THE_COMMENT_OWNER');
+
+    expect(mockCommentRepository.getCommentById).toHaveBeenCalledWith(useCasePayload.id);
+    expect(mockCommentRepository.deleteCommentById).not.toHaveBeenCalled();
   });
+
   it('should throw error when comment not found', async () => {
     // Arrange
     const useCasePayload = {
