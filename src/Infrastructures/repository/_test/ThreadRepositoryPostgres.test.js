@@ -94,13 +94,14 @@ describe('ThreadRepositoryPostgres', () => {
       await expect(threadRepositoryPostgres.isThreadExist('thread-999')).rejects.toThrow(NotFoundError);
     });
 
-    it('should not throw NotFoundError when thread found', async () => {
+    it('should return true when thread found', async () => {
       // Arrange
       await ThreadsTableTestHelper.addThread({ id: 'thread-234' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
       await expect(threadRepositoryPostgres.isThreadExist('thread-234')).resolves.not.toThrow(NotFoundError);
+      expect(await threadRepositoryPostgres.isThreadExist('thread-234')).toEqual(true);
     });
   });
 });
