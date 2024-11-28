@@ -1,3 +1,4 @@
+const NotFoundError = require('../../../../Commons/exceptions/NotFoundError');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
 const AddedComment = require('../../../../Domains/comments/entities/AddedComment');
 const DeleteCommentUseCase = require('../DeleteCommentUseCase');
@@ -89,7 +90,7 @@ describe('DeleteCommentUseCase', () => {
 
     // Mocking needed function
     mockCommentRepository.getCommentById = jest.fn()
-      .mockImplementation(() => Promise.reject(new Error('NOT_FOUND_ERROR')));
+      .mockImplementation(() => Promise.reject(new NotFoundError('Komentar tidak ditemukan')));
 
     // Creating instance of use case
     const deleteCommentUseCase = new DeleteCommentUseCase({
@@ -99,6 +100,8 @@ describe('DeleteCommentUseCase', () => {
     // Action & Assert
     await expect(deleteCommentUseCase.execute(useCasePayload.id, useCasePayload.userId))
       .rejects
-      .toThrow('NOT_FOUND_ERROR');
+      .toThrow(new NotFoundError('Komentar tidak ditemukan'));
+
+    expect(mockCommentRepository.getCommentById).toHaveBeenCalledWith(useCasePayload.id);
   });
 });
