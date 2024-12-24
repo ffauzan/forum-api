@@ -13,7 +13,7 @@ exports.up = (pgm) => {
     comment_id: {
       type: 'VARCHAR(50)',
       notNull: true,
-      references: 'threads',
+      references: 'comments',
       onDelete: 'cascade',
     },
     created_at: {
