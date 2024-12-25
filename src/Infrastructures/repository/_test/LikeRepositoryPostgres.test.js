@@ -34,6 +34,7 @@ describe('LikeRepositoryPostgres', () => {
       const addLike = new AddLike({
         userId: 'user-123',
         commentId: 'comment-123',
+        threadId: 'thread-123',
       });
       const fakeIdGenerator = () => '123'; // stub!
       const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, fakeIdGenerator);
@@ -52,6 +53,7 @@ describe('LikeRepositoryPostgres', () => {
       const addLike = new AddLike({
         userId: 'user-123',
         commentId: 'comment-999',
+        threadId: 'thread-123',
       });
       const fakeIdGenerator = () => '123'; // stub!
       const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, fakeIdGenerator);

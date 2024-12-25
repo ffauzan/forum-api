@@ -1,6 +1,7 @@
 const AddLike = require('../../../../Domains/likes/entities/AddLike');
 const LikeRepository = require('../../../../Domains/likes/LikeRepository');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
+const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
 const AddLikeUseCase = require('../AddLikeUseCase');
 
 const InvariantError = require('../../../../Commons/exceptions/InvariantError');
@@ -12,13 +13,18 @@ describe('AddLikeUseCase', () => {
     const useCasePayload = {
       userId: 'user-123',
       commentId: 'comment-123',
+      threadId: 'thread-123',
     };
 
     // Use case dependency
     const mockLikeRepository = new LikeRepository();
+    const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
 
     // Mocking needed function
+    mockThreadRepository.isThreadExist = jest.fn()
+      .mockImplementation(() => Promise.resolve(true));
+
     mockCommentRepository.isCommentExist = jest.fn()
       .mockImplementation(() => Promise.resolve(true));
 
@@ -39,6 +45,7 @@ describe('AddLikeUseCase', () => {
     const addLikeUseCase = new AddLikeUseCase({
       likeRepository: mockLikeRepository,
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Action
@@ -46,6 +53,7 @@ describe('AddLikeUseCase', () => {
 
     // Assert
     expect(likeId).toEqual('like-123');
+    expect(mockThreadRepository.isThreadExist).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.isCommentExist).toHaveBeenCalledWith(useCasePayload.commentId);
     expect(mockLikeRepository.isLikeExist).toHaveBeenCalledWith(useCasePayload.userId, useCasePayload.commentId);
     expect(mockLikeRepository.addLike).toHaveBeenCalledWith(new AddLike(useCasePayload));
@@ -57,13 +65,18 @@ describe('AddLikeUseCase', () => {
     const useCasePayload = {
       userId: 'user-123',
       commentId: 'comment-123',
+      threadId: 'thread-123',
     };
 
     // Use case dependency
     const mockLikeRepository = new LikeRepository();
+    const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
 
     // Mocking needed function
+    mockThreadRepository.isThreadExist = jest.fn()
+      .mockImplementation(() => Promise.resolve(true));
+
     mockCommentRepository.isCommentExist = jest.fn()
       .mockImplementation(() => Promise.resolve(true));
 
@@ -84,6 +97,7 @@ describe('AddLikeUseCase', () => {
     const addLikeUseCase = new AddLikeUseCase({
       likeRepository: mockLikeRepository,
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Action
@@ -91,6 +105,7 @@ describe('AddLikeUseCase', () => {
 
     // Assert
     expect(likeId).toEqual('like-123');
+    expect(mockThreadRepository.isThreadExist).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.isCommentExist).toHaveBeenCalledWith(useCasePayload.commentId);
     expect(mockLikeRepository.isLikeExist).toHaveBeenCalledWith(useCasePayload.userId, useCasePayload.commentId);
     expect(mockLikeRepository.deleteLike).toHaveBeenCalledWith(useCasePayload.userId, useCasePayload.commentId);
@@ -102,13 +117,18 @@ describe('AddLikeUseCase', () => {
     const useCasePayload = {
       userId: 'user-123',
       commentId: 'comment-123',
+      threadId: 'thread-123',
     };
 
     // Use case dependency
     const mockLikeRepository = new LikeRepository();
+    const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
 
     // Mocking needed function
+    mockThreadRepository.isThreadExist = jest.fn()
+      .mockImplementation(() => Promise.resolve(true));
+
     mockCommentRepository.isCommentExist = jest.fn()
       .mockImplementation(() => Promise.reject(new NotFoundError('Komentar tidak ditemukan')));
 
@@ -129,10 +149,12 @@ describe('AddLikeUseCase', () => {
     const addLikeUseCase = new AddLikeUseCase({
       likeRepository: mockLikeRepository,
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Action & Assert
     await expect(addLikeUseCase.execute(useCasePayload)).rejects.toThrow(NotFoundError);
+    expect(mockThreadRepository.isThreadExist).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.isCommentExist).toHaveBeenCalledWith(useCasePayload.commentId);
     expect(mockLikeRepository.isLikeExist).not.toHaveBeenCalled();
     expect(mockLikeRepository.addLike).not.toHaveBeenCalled();

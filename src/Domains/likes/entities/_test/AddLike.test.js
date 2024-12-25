@@ -14,6 +14,7 @@ describe('a AddLike entities', () => {
   it('should throw error when payload did not meet data type specification', () => {
     // Arrange
     const payload = {
+      threadId: 123,
       commentId: 'comment-123',
       userId: 123,
     };
@@ -25,6 +26,7 @@ describe('a AddLike entities', () => {
   it('should create addLike object correctly', () => {
     // Arrange
     const payload = {
+      threadId: 'thread-123',
       commentId: 'comment-123',
       userId: 'user-123',
     };
