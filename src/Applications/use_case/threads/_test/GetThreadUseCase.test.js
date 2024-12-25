@@ -3,6 +3,7 @@ const GetThreadUseCase = require('../GetThreadUseCase');
 const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
 const UserRepository = require('../../../../Domains/users/UserRepository');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
+const LikeRepository = require('../../../../Domains/likes/LikeRepository');
 const RegisteredUser = require('../../../../Domains/users/entities/RegisteredUser');
 const AddedComment = require('../../../../Domains/comments/entities/AddedComment');
 const NotFoundError = require('../../../../Commons/exceptions/NotFoundError');
@@ -35,6 +36,7 @@ describe('GetThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockUserRepository = new UserRepository();
     const mockCommentRepository = new CommentRepository();
+    const mockLikeRepository = new LikeRepository();
 
     // Mocking needed function
     mockThreadRepository.getThreadById = jest.fn()
@@ -103,11 +105,15 @@ describe('GetThreadUseCase', () => {
         }),
       ]));
 
+    mockLikeRepository.getLikeCountByCommentId = jest.fn()
+      .mockImplementation(() => Promise.resolve(0));
+
     // Creating instance of use case
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
       userRepository: mockUserRepository,
       commentRepository: mockCommentRepository,
+      likeRepository: mockLikeRepository,
     });
 
     // Action
@@ -119,12 +125,14 @@ describe('GetThreadUseCase', () => {
       comments: [
         {
           ...expectedComments[0],
+          likeCount: 0,
           replies: [
             {
               id: 'comment-124',
               username: 'threadOwner',
               date: '2024-11-26T02:00:00.000Z',
               content: '**balasan telah dihapus**',
+              likeCount: 0,
             },
           ],
         },
@@ -133,6 +141,7 @@ describe('GetThreadUseCase', () => {
           username: 'commentUser',
           date: '2024-11-26T03:00:00.000Z',
           content: '**komentar telah dihapus**',
+          likeCount: 0,
           replies: [],
         },
       ],
@@ -145,6 +154,11 @@ describe('GetThreadUseCase', () => {
     expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-123');
     expect(mockUserRepository.getUserById).toHaveBeenCalledWith('user-456');
     expect(mockCommentRepository.getCommentsByThreadId).toHaveBeenCalledWith(useCasePayload.threadId);
+
+    expect(mockLikeRepository.getLikeCountByCommentId).toHaveBeenCalledTimes(3);
+    expect(mockLikeRepository.getLikeCountByCommentId).toHaveBeenCalledWith('comment-123');
+    expect(mockLikeRepository.getLikeCountByCommentId).toHaveBeenCalledWith('comment-124');
+    expect(mockLikeRepository.getLikeCountByCommentId).toHaveBeenCalledWith('comment-125');
   });
 
   it('should throw error if thread not found', async () => {
