@@ -241,4 +241,29 @@ describe('CommentRepositoryPostgres', () => {
       });
     });
   });
+
+  describe('isCommentExist function', () => {
+    it('should return true if comment exist', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-1', userId: 'user-1', threadId: 'thread-1', content: 'content',
+      });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action
+      const isCommentExist = await commentRepositoryPostgres.isCommentExist('comment-1');
+
+      // Assert
+      expect(isCommentExist).toEqual(true);
+    });
+
+    it('should throw NotFoundError if comment not exist', async () => {
+      // Arrange
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(commentRepositoryPostgres.isCommentExist('comment-1')).rejects.toThrow(NotFoundError);
+    });
+  });
 });

@@ -8,6 +8,7 @@ describe('LikeRepository interface', () => {
     // Action and Assert
     await expect(likeRepository.addLike({})).rejects.toThrow('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
     await expect(likeRepository.isLikeExist({})).rejects.toThrow('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    await expect(likeRepository.getLikeCountByCommentId('')).rejects.toThrow('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
     await expect(likeRepository.deleteLike({})).rejects.toThrow('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
 });

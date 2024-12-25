@@ -3,11 +3,15 @@ class LikeRepository {
     throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
-  async isLikeExist(addLike) {
+  async isLikeExist(userId, commentId) {
     throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
-  async deleteLike(addLike) {
+  async getLikeCountByCommentId(commentId) {
+    throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async deleteLike(userId, commentId) {
     throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 }
