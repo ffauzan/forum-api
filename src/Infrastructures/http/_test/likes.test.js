@@ -41,10 +41,14 @@ describe('/threads/{threadId}/comments/{commentId}/likes endpoint', () => {
         },
       });
 
+      const addedLike = await LikesTableTestHelper.findLike({ commentId: 'comment-1', userId: 'user-1' });
+
       // Assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(200);
       expect(responseJson.status).toEqual('success');
+
+      expect(addedLike).toHaveLength(1);
     });
 
     it('should response with 404 when thread not found', async () => {

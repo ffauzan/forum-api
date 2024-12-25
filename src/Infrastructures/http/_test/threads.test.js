@@ -206,6 +206,8 @@ describe('/threads endpoint', () => {
       expect(responseJson.data.thread.body).toEqual('Thread Body');
       expect(responseJson.data.thread.comments).toHaveLength(1);
       expect(responseJson.data.thread.comments[0].content).toEqual('Comment Content');
+      expect(responseJson.data.thread.comments[0].replies).toHaveLength(0);
+      expect(responseJson.data.thread.comments[0].likeCount).toEqual(0);
     });
 
     it('should response 404 when thread does not exist', async () => {
